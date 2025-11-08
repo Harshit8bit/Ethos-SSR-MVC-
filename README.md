@@ -126,4 +126,4 @@ To run this project on your local machine, follow these steps:
 
 * **Harshit [Harshit Agarwal]**
 * GitHub: [Harshit8bit]
-* LinkedIn: [www.linkedin.com/in/harshit-agarwal-bbb474326]
+* LinkedIn: [www.linkedin.com/in/harshit-agarwal8bit]
