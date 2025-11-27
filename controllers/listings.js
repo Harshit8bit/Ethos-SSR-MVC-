@@ -6,34 +6,32 @@ const mapToken = process.env.MAP_TOKEN ;
 const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 module.exports.index = async (req, res) => {
-    // 1. Grab the search query from the URL
-    const { q } = req.query; 
-
+    const { q, category } = req.query; 
     let allListing;
 
+    // --- SEARCH / FILTER LOGIC ---
     if (q) {
-        // 2. If the user searched for something, filter the database
         allListing = await Listing.find({
             $or: [
-                // Search inside the 'title'
-                { title: { $regex: q, $options: 'i' } }, 
-                
-                // Search inside the 'location'
+                { title: { $regex: q, $options: 'i' } },
                 { location: { $regex: q, $options: 'i' } },
-                
-                // Search inside the 'country'
                 { country: { $regex: q, $options: 'i' } },
-                
-                // Search inside 'category' (if you have it)
                 { category: { $regex: q, $options: 'i' } }
             ]
         });
+    } else if (category) {
+        allListing = await Listing.find({ category: category });
     } else {
-        // 3. If no search, show everything (Default behavior)
         allListing = await Listing.find({});
     }
 
-    // 4. Send the data to your EJS file
+    // --- NEW FEATURE: NO RESULTS FOUND ---
+    // Only check if the user actually tried to search or filter
+    if ((q || category) && allListing.length === 0) {
+        req.flash("error", "No listings found matching your search!");
+        return res.redirect("/listings"); // Reset to show all listings
+    }
+
     res.render("listings/index.ejs", { allListing });
 };
 
